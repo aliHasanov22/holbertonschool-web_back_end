@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
-"""this is documentation for this file"""
+"""Module for updating topics in MongoDB"""
 
 
 def update_topics(mongo_collection, name, topics):
-    """this is docmentation sfor this file"""
-    mongo_collection.update_many({"name": name}, {"$set:" {"topics": topics}})
+    """Changes all topics of a school document based on the name"""
+    mongo_collection.update_many(
+        {"name": name},
+        {"$set": {"topics": topics}}
+    )
