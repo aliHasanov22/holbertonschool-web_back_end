@@ -6,7 +6,7 @@ BaseCaching = __import__('base_caching').BaseCaching
 
 class FIFOCache(BaseCaching):
     """caching with FIFO in python"""
-    
+
     def __init__(self):
         """starts the FIFO cache with FIFO policy"""
         super().__init__()
@@ -18,7 +18,7 @@ class FIFOCache(BaseCaching):
             return
 
         if key in self.cache_data:
-            self.cache_data[key] = item 
+            self.cache_data[key] = item
             return
 
         self.cache_data[key] = item
@@ -28,7 +28,7 @@ class FIFOCache(BaseCaching):
             first_key = self.order.pop(0)
             del self.cache_data[first_key]
             print("DISCARD: {}".format(first_key))
-    
+
     def get(self, key):
         """return the key"""
         if key is None:
