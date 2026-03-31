@@ -5,6 +5,7 @@ BaseCaching = __import__('base_caching').BaseCaching
 
 
 class LRUCache(BaseCaching):
+    """LRU caching in python"""
     def __init__(self):
         """starts the LRU cache with its policy"""
         super().__init__()
