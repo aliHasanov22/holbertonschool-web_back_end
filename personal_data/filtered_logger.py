@@ -8,5 +8,5 @@ def filter_datum(fields: list[str], redaction: str, message: str,
                  separator: str) -> str:
     """return the log message obfuscated"""
 
-    patt = f"({'|'.join(fields)})=.*?{separator}"
-    return re.sub(patt, f"\\1={redaction}{separator}", message)
+    return re.sub(f"({'|'.join(fields)})=[^{separator}]*",
+                  f"\\1={redaction}", message)
