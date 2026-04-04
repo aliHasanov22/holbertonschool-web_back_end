@@ -1,87 +1,115 @@
 #!/usr/bin/env python3
 """
-Filtered logger and secure database connection
+Module for handling personal data securely.
 """
 
 import logging
 import os
+import re
+from typing import List
+
+import bcrypt
 import mysql.connector
-from typing import Tuple
 
-# ------------------ PII Fields ------------------
-PII_FIELDS: Tuple[str, ...] = ("name", "email", "ssn", "password", "phone")
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
-# ------------------ Redacting Formatter ------------------
-def filter_datum(fields: Tuple[str, ...], redaction: str, message: str,
-                 separator: str) -> str:
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
     """
-    Replace values of specified fields in message with redaction
+    Return the log message with specified fields obfuscated.
     """
-    for field in fields:
-        message = message.replace(f"{field}=", f"{field}={redaction}")
-    return message
+    pattern = r"({}=)[^{}]*".format("|".join(fields), separator)
+    return re.sub(pattern, r"\1" + redaction, message)
 
 
 class RedactingFormatter(logging.Formatter):
-    """Redacting Formatter class"""
+    """
+    Formatter that redacts specified fields in log records.
+    """
 
     REDACTION = "***"
-    FORMAT = ("[HOLBERTON] %(name)s %(levelname)s "
-              "%(asctime)-15s: %(message)s")
+    FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields: Tuple[str, ...]):
-        super().__init__(self.FORMAT)
+    def __init__(self, fields: List[str]):
+        """
+        Initialize the formatter with fields to redact.
+        """
+        super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        record.msg = filter_datum(
-            self.fields, self.REDACTION, record.getMessage(), self.SEPARATOR
-        )
-        return super().format(record)
+        """
+        Return the formatted log record with sensitive fields redacted.
+        """
+        return filter_datum(self.fields, self.REDACTION,
+                            super().format(record), self.SEPARATOR)
 
 
-# ------------------ Logger ------------------
 def get_logger() -> logging.Logger:
-    """Returns a logger named 'user_data' with RedactingFormatter applied"""
+    """
+    Return a logger configured to redact PII fields.
+    """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    if not logger.handlers:
-        handler = logging.StreamHandler()
-        handler.setFormatter(RedactingFormatter(fields=PII_FIELDS))
-        logger.addHandler(handler)
+    handler = logging.StreamHandler()
+    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+
+    logger.handlers.clear()
+    logger.addHandler(handler)
 
     return logger
 
 
-# ------------------ Secure Database Connection ------------------
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """
-    Connects to the MySQL database from environment variables.
-
-    Environment variables:
-        PERSONAL_DATA_DB_USERNAME (default: "root")
-        PERSONAL_DATA_DB_PASSWORD (default: "")
-        PERSONAL_DATA_DB_HOST (default: "localhost")
-        PERSONAL_DATA_DB_NAME (required)
-
-    Returns:
-        mysql.connector.connection.MySQLConnection: connection object
+    Return a connection to the MySQL database.
     """
-    user = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
-    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
-    database = os.getenv("PERSONAL_DATA_DB_NAME")
-
-    if not database:
-        raise ValueError("Env variable PERSONAL_DATA_DB_NAME is not set")
-
     return mysql.connector.connect(
-        user=user,
-        password=password,
-        host=host,
-        database=database
+        user=os.getenv("PERSONAL_DATA_DB_USERNAME", "root"),
+        password=os.getenv("PERSONAL_DATA_DB_PASSWORD", ""),
+        host=os.getenv("PERSONAL_DATA_DB_HOST", "localhost"),
+        database=os.getenv("PERSONAL_DATA_DB_NAME")
     )
+
+
+def main() -> None:
+    """
+    Retrieve all rows in the users table and display them with PII redacted.
+    """
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    fields = cursor.column_names
+    logger = get_logger()
+
+    for row in cursor:
+        message = "".join(
+            "{}={};".format(field, value)
+            for field, value in zip(fields, row)
+        )
+        logger.info(message)
+
+    cursor.close()
+    db.close()
+
+
+def hash_password(password: str) -> bytes:
+    """
+    Return a salted, hashed password.
+    """
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+
+
+def is_valid(hashed_password: bytes, password: str) -> bool:
+    """
+    Return True if the password matches the hashed password.
+    """
+    return bcrypt.checkpw(password.encode("utf-8"), hashed_password)
+
+
+if __name__ == "__main__":
+    main()
