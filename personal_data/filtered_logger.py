@@ -1,25 +1,15 @@
 #!/usr/bin/env python3
 """
-Module for filtering sensitive data from logs.
+Filtered logger module.
 """
 
 import logging
-import re
 from typing import List
-
-
-def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str) -> str:
-    """
-    Obfuscate the values of the specified fields in a log message.
-    """
-    pattern = r"({}=)[^{}]*".format("|".join(fields), separator)
-    return re.sub(pattern, r"\1" + redaction, message)
 
 
 class RedactingFormatter(logging.Formatter):
     """
-    Formatter that redacts specified fields in log records.
+    Redacting Formatter class.
     """
 
     REDACTION = "***"
@@ -35,11 +25,6 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """
-        Return the formatted log record with sensitive fields redacted.
+        Format a log record.
         """
-        return filter_datum(
-            self.fields,
-            self.REDACTION,
-            super(RedactingFormatter, self).format(record),
-            self.SEPARATOR
-        )
+        raise NotImplementedError
