@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Module for hashing passwords with bcrypt.
+Encrypt password using bcrypt
 """
 
 import bcrypt
@@ -8,6 +8,15 @@ import bcrypt
 
 def hash_password(password: str) -> bytes:
     """
-    Return a salted, hashed password as a byte string.
+    Hashes a password using bcrypt with a generated salt.
     """
-    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed
+
+
+def is_valid(hashed_password: bytes, password: str) -> bool:
+    """
+    Validates a password against a hashed password.
+    """
+    return bcrypt.checkpw(password.encode('utf-8'), hashed_password)
