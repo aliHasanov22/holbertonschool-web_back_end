@@ -11,8 +11,9 @@ def filter_datum(fields: List[str], redaction: str,
     return re.sub(
         rf"({'|'.join(fields)})=[^{separator}]*",
         lambda m: f"{m.group(1)}={redaction}",
-        message
-    )
+        message)
+
+
 class RedactingFormatter(logging.Formatter):
     """
     Formatter that redacts sensitive fields in log records.
