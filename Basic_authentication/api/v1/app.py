@@ -24,9 +24,8 @@ def not_found(error) -> str:
 @app.errorhandler(401)
 def unauthorized(error):
     """Unauthorized handler"""
-
-
     return jsonify({"error": "Unauthorized"}), 401
+
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
