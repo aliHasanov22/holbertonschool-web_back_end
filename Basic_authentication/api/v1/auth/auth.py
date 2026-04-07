@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """ Module of API views for the API authentication. """
-import requests from flask
+from flask import request
 from typing import List, TypeVar
 
 
