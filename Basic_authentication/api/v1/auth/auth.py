@@ -1,3 +1,4 @@
+ #!/usr/bin/env python3
 import requests from flask
 from typing import List, TypeVar
 """ Module of API views"""
