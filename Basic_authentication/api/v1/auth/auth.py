@@ -9,7 +9,13 @@ class Auth:
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """Require auth method to determine if the path is protected."""
-        return False
+        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+            return True
+        if path[-1] != '/':
+            path += '/'
+        if path in excluded_paths:
+            return False
+        return True
 
     def authorization_header(self, request=None) -> str:
         """Authorization header method to get the auth header from request."""
