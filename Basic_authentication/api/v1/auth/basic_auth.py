@@ -6,10 +6,9 @@ from api.v1.auth.auth import Auth
 
 
 class BasicAuth(Auth):
-    """BasicAuth is a class inherited from Auth to
-       manage Api authentication"""
-   def extract_base64_authorization_header(self, 
-         authorization_header: str) -> str:
+    """BasicAuth is a class inherited from Auth to manage Api authentication"""
+   def extract_base64_authorization_header(self,
+                                           authorization_header: str) -> str:
       """Extract base64 part of auth header for basic auth"""
       if authorization_header is None  or type(authorization_header) != str:
          return None
