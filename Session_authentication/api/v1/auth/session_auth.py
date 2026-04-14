@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """ Module of API views for the API authentication. """
+import os
+
 from flask import request
 from typing import List, TypeVar
 from api.v1.auth.auth import Auth
@@ -24,3 +26,11 @@ class SessionAuth(Auth):
         if session_id is None or not isinstance(session_id, str):
             return None
         return self.user_id_by_session_id.get(session_id)
+
+    def session_cookie(self, request=None):
+        """return cookie value from request"""
+        if request is None:
+            return None
+
+        session = os.getenv("SESSION_NAME")
+        return request.cookies.get(session)
