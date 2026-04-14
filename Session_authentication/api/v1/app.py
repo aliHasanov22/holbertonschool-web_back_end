@@ -21,6 +21,7 @@ elif getenv("AUTH_TYPE") == 'session_auth':
     from api.v1.auth.session_auth import SessionAuth
     auth = SessionAuth()
 
+
 @app.before_request
 def before_request():
     """Before request handler to mange api"""
