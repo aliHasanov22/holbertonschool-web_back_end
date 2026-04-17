@@ -44,6 +44,8 @@ def login():
 def logout():
     """ logout route for session authentication"""
     from api.v1.app import auth
+
+
     if auth.destroy_session(request):
         return jsonify({}), 200
 

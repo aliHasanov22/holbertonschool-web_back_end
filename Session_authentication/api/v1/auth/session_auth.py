@@ -38,7 +38,7 @@ class SessionAuth(Auth):
         """delets the user session logout"""
         if request is None or self.session_cookie(request) is None:
             return False
-        
+
         if self.session_cookie(request) not in self.user_id_by_session_id:
             return False
 
