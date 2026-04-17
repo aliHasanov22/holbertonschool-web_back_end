@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 """ Module of API views for the API authentication. """
-import os
-
-from flask import app, jsonify, request
-from typing import List, TypeVar
-from Session_authentication.api.v1 import auth
 from api.v1.auth.auth import Auth
 import uuid
-import json
 
 
 class SessionAuth(Auth):
