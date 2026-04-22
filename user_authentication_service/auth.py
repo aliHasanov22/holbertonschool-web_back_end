@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """DB module for the user authentication service"""
+import uuid
+
 from db import DB
 from user import User
 from bcrypt import hashpw, gensalt, checkpw
@@ -9,6 +11,12 @@ from sqlalchemy.orm.exc import NoResultFound
 def _hash_password(password: str) -> bytes:
     """hashed password"""
     return hashpw(password.encode(), gensalt())
+
+
+def _generate_uuid() -> str:
+    """generate uuid"""
+    from uuid import uuid4
+    return str(uuid4())
 
 
 class Auth:
@@ -33,8 +41,3 @@ class Auth:
         except NoResultFound:
             return False
         return checkpw(password.encode("utf-8"), user.hashed_password)
-
-    def _generate_uuid(self) -> str:
-        """generate uuid"""
-        import uuid
-        return str(uuid.uuid4())
