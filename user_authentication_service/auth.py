@@ -33,3 +33,8 @@ class Auth:
         except NoResultFound:
             return False
         return checkpw(password.encode("utf-8"), user.hashed_password)
+
+    def _generate_uuid(self) -> str:
+        """generate uuid"""
+        import uuid
+        return str(uuid.uuid4())
