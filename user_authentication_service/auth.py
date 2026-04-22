@@ -2,7 +2,7 @@
 """DB module for the user authentication service"""
 from db import DB
 from user import User
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw, gensalt, checkpw, checkpw, checkpw
 from sqlalchemy.orm.exc import NoResultFound
 
 
