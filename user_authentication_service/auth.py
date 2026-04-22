@@ -10,13 +10,14 @@ def _hash_password(password: str) -> bytes:
     """hashed password"""
     return hashpw(password.encode(), gensalt())
 
+
 class Auth:
     """Auth class to interact with auth data"""
 
     def __init__(self):
         """initialize auth class"""
         self._db = DB()
-    
+
     def register_user(self, email: str, password: str) -> User:
         """register user to the database"""
         try:
