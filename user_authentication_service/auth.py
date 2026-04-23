@@ -41,7 +41,7 @@ class Auth:
         except NoResultFound:
             return False
         return checkpw(password.encode("utf-8"), user.hashed_password)
-    
+
     def create_session(self, email: str) -> str:
         """Create session for a user"""
         try:
