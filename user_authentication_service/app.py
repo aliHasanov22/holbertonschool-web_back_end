@@ -25,7 +25,7 @@ def users() -> str:
         return jsonify({"email": user.email, "message": "user created"})
     except ValueError:
         return jsonify({"message": "email already registered"}), 400
-
+ 
 
 @app.route('/sessions', methods=['POST'], strict_slashes=False)
 def login() -> str:
@@ -41,6 +41,18 @@ def login() -> str:
         return response
     else:
         abort(401)
+
+
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
+def logout() -> str:
+    """logout user destroy session"""
+    session_id = request.cookies.get("session_id")
+    user = AUTH.get_user_from_session_id(session_id)
+    if user:
+        AUTH.destroy_session(user.id)
+        return jsonify({"message": "logged out"})
+    else:
+        abort(403)
 
 
 if __name__ == "__main__":
