@@ -1,11 +1,11 @@
 -- resets valid email when mail adress changed
 DELIMITER $$
-CREATE TRIGGER valid_email
-BEFORE INSERT ON users
+CREATE TRIGGER reset_valid_email
+BEFORE UPDATE ON users
 FOR EACH ROW
 BEGIN
-    IF NEW.email NOT REGEXP '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Invalid email format';
+    IF NEW.email <> OLD.email THEN
+        SET NEW.valid_email = 0;
     END IF;
 END$$
 DELIMITER ;
