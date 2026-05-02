@@ -1,6 +1,6 @@
 -- sql for calcualting bands with glam rock
-SELECT band_name, IF(split IS NOT NULL, split - formed, YEAR(2024) - formed) AS life_span
+SELECT band_name, 
+       IFNULL(2024 - split,2024) -formed AS lifespan
 FROM metal_bands
-WHERE genre = 'glam rock'
-GROUP BY band_name
-ORDER BY life_span DESC;
+WHERE style LIKE '%glam rock%'
+ORDER BY lifespan DESC;
