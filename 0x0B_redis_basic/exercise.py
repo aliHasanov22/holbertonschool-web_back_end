@@ -81,7 +81,8 @@ class Cache:
 
     def get_str(self, key: str) -> Optional[str]:
         """Retrieve a UTF-8 decoded string value by key."""
-        return cast(Optional[str], self.get(key, fn=lambda d: d.decode("utf-8")))
+        return cast(Optional[str],
+                    self.get(key, fn=lambda d: d.decode("utf-8")))
 
     def get_int(self, key: str) -> Optional[int]:
         """Retrieve an integer value by key."""
