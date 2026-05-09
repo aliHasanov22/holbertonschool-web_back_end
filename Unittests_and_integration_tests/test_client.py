@@ -2,10 +2,12 @@
 """Unittests for client.py
 """
 
+import unittest
 from unittest import TestCase
-from parameterized import parameterized
-from unittest.mock import PropertyMock, patch
+from parameterized import parameterized, parameterized_class
+from unittest.mock import Mock, PropertyMock, patch
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(TestCase):
@@ -75,3 +77,36 @@ class TestGithubOrgClient(TestCase):
 
         self.assertEqual(GithubOrgClient.has_license(repo, license_key),
                          expected)
+
+
+@parameterized_class(
+    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+    TEST_PAYLOAD,
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient.public_repos"""
+
+    @classmethod
+    def setUpClass(cls):
+        """Set up class fixtures and mock requests.get"""
+
+        cls.get_patcher = patch("requests.get")
+        mock_get = cls.get_patcher.start()
+
+        def get_payload(url):
+            """Return a mocked response based on URL"""
+
+            response = Mock()
+            if url == "https://api.github.com/orgs/google":
+                response.json.return_value = cls.org_payload
+            elif url == cls.org_payload["repos_url"]:
+                response.json.return_value = cls.repos_payload
+            return response
+
+        mock_get.side_effect = get_payload
+
+    @classmethod
+    def tearDownClass(cls):
+        """Stop requests.get patcher"""
+
+        cls.get_patcher.stop()
