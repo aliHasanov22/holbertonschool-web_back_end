@@ -1,0 +1,14 @@
+{
+  "name": "task_0",
+  "version": "1.0.0",
+  "description": "Basic tests with Mocha and Node assertion library",
+  "main": "0-calcul.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "chai": "^6.2.2",
+    "mocha": "^11.7.1",
+    "sinon": "^22.0.0"
+  }
+}
